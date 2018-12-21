@@ -47,7 +47,60 @@ Two functions were added to identify the rocks and obstacles:
 
 #### 1. Populate the `process_image()` function with the appropriate analysis steps to map pixels identifying navigable terrain, obstacles and rock samples into a worldmap.  Run `process_image()` on your test data using the `moviepy` functions provided to create video output of your result. 
 And another! 
- 
+
+    # 1) Define source and destination points for perspective transform
+    # Set a bottom offset to account for the fact that the bottom of the image 
+    dst_size = 5
+    bottom_offset = 6
+    source = np.float32([[14, 140], [301 ,140],[200, 96], [118, 96]])
+    destination = np.float32([[image.shape[1]/2 - dst_size, image.shape[0] - bottom_offset],
+                  [image.shape[1]/2 + dst_size, image.shape[0] - bottom_offset],
+                  [image.shape[1]/2 + dst_size, image.shape[0] - 2*dst_size - bottom_offset], 
+                  [image.shape[1]/2 - dst_size, image.shape[0] - 2*dst_size - bottom_offset],
+                  ])
+    # 2) Apply perspective transform
+    warped, mask = perspect_transform(img, source, destination)
+    # 3) Apply color threshold to identify navigable terrain/obstacles/rock samples
+    threshed = color_thresh(warped)
+    obs_map = np.absolute(np.float32(threshed)-1) * mask
+    # 4) Convert thresholded image pixel values to rover-centric coords
+    xpix, ypix = rover_coords(threshed)
+    obsxpix, obsypix = rover_coords(obs_map)
+    # create a map of the world 
+    world_size = data.worldmap.shape[0]
+    # 6) define proper variables for plotting the pixels to the world 
+    scale = 2 * dst_size
+    xpos = data.xpos[data.count]
+    ypos = data.ypos[data.count]
+    yaw = data.yaw[data.count]
+    # 5) Convert rover-centric pixel values to world coord
+    x_world, y_world = pix_to_world(xpix, ypix, xpos, ypos, yaw, world_size, scale)
+    obs_x_world, obs_y_world = pix_to_world(obsxpix, obsypix, xpos, ypos, yaw, world_size, scale) 
+    # 7) Display the navigable pixels in blue and the obstacle pixels in red  
+    data.worldmap[y_world, x_world,2] = 255
+    data.worldmap[obs_y_world,obs_x_world,0] = 255
+    # 8 ) zero out obstacle pixels that overlap with navigable pixels 
+    nav_pix = data.worldmap[:,:,2] > 0
+    data.worldmap[nav_pix,0] = 0
+    rock_map = rock_thresh(warped, levels =(110,110,50))
+    # 9) check for rocks 
+    if rock_map.any():
+        # Convert rock image pixel values to rover-centric coords
+        rock_x,rock_y = rover_coords(rock_map)
+        
+        rock_x_world,rock_y_world = pix_to_world(rock_x,rock_y,xpos,ypos,yaw,world_size,scale)
+        data.worldmap[rock_y_world,rock_x_world,:] = 255     
+    # 10 ) Make a mosaic image
+    output_image = np.zeros((img.shape[0] + data.worldmap.shape[0], img.shape[1]*2, 3))
+    output_image[0:img.shape[0], 0:img.shape[1]] = img
+    # Add the warped image in the upper right hand corner
+    output_image[0:img.shape[0], img.shape[1]:] = warped
+    # Overlay worldmap with ground truth map
+    map_add = cv2.addWeighted(data.worldmap, 1, data.ground_truth, 0.5, 0)
+    # Flip map overlay so y-axis points upward and add to output_image 
+    output_image[img.shape[0]:, 0:data.worldmap.shape[1]] = np.flipud(map_add)
+
+    
 
 ### Autonomous Navigation and Mapping
 
