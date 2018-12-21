@@ -39,7 +39,7 @@ Two functions were added to identify the rocks and obstacles:
 
 1- rock_threshed(img, levels =(110,110,70)
 
-![alt text](images/3_6.JPG)
+![alt text](images/rock_thresh_function.JPG)
 
 2- obs_thresh(img, rgb_thresh=(160,160,160)
 
