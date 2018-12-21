@@ -45,7 +45,7 @@ Here is an example of how to include an image in your writeup.
 #### 1. Populate the `process_image()` function with the appropriate analysis steps to map pixels identifying navigable terrain, obstacles and rock samples into a worldmap.  Run `process_image()` on your test data using the `moviepy` functions provided to create video output of your result. 
 And another! 
 
-![alt text] [./misc/rover_image.jpg ]
+![alt text] ./misc/rover_image.jpg 
 
 ### Autonomous Navigation and Mapping
 
