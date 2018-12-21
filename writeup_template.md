@@ -60,6 +60,6 @@ Here I'll talk about the approach I took, what techniques I used, what worked an
 
 
 
-![alt text][image3]
+![alt text][3_6]
 
 
