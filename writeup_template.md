@@ -34,10 +34,16 @@ You're reading it!
 
 ### Notebook Analysis
 #### 1. Run the functions provided in the notebook on test images (first with the test data provided, next on data you have recorded). Add/modify functions to allow for color selection of obstacles and rock samples.
-Here is an example of how to include an image in your writeup.
 
+Two functions were added to identify the rocks and obstacles:
 
+1- rock_threshed(img, levels =(110,110,70)
 
+![alt text](images/3_6.JPG)
+
+2- obs_thresh(img, rgb_thresh=(160,160,160)
+
+![alt text](images/3_6.JPG)
 #### 1. Populate the `process_image()` function with the appropriate analysis steps to map pixels identifying navigable terrain, obstacles and rock samples into a worldmap.  Run `process_image()` on your test data using the `moviepy` functions provided to create video output of your result. 
 And another! 
  
