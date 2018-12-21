@@ -43,7 +43,8 @@ Two functions were added to identify the rocks and obstacles:
 
 2- obs_thresh(img, rgb_thresh=(160,160,160)
 
-![alt text](images/3_6.JPG)
+![alt text](images/obs_threshed.JPG)
+
 #### 1. Populate the `process_image()` function with the appropriate analysis steps to map pixels identifying navigable terrain, obstacles and rock samples into a worldmap.  Run `process_image()` on your test data using the `moviepy` functions provided to create video output of your result. 
 And another! 
  
