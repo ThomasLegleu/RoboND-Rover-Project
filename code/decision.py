@@ -34,7 +34,7 @@ def decision_step(Rover):
             elif len(Rover.nav_angles) >= Rover.stop_forward:  
                 # If mode is forward, navigable terrain looks good 
                 # and velocity is below max, then throttle 
-                if Rover.vel < 0.2 and Rover.stuck_time > 10:
+                if Rover.vel < 0.2 and Rover.stuck_time % 50 == 0:
                     print("hey")
                     Rover.throttle = 0
                     # Release the brake to allow turning
