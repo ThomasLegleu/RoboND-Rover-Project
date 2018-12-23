@@ -165,7 +165,7 @@ def perception_step(Rover):
     # Update Rover pixel distances and angles 
         # Rover.nav_dists = rover_centric_pixel_distances
         # Rover.nav_angles = rover_centric_angles
-    Rover.nav_angles = angles + 0.15 # change the angle to hug the wall on the left hand side 
+    Rover.nav_angles = angles + 0.3 # change the angle to hug the wall on the left hand side 
     #print(Rover.nav_angles)
     
 
