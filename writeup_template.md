@@ -35,7 +35,9 @@ You're reading it!
 ### Notebook Analysis
 #### 1. Run the functions provided in the notebook on test images (first with the test data provided, next on data you have recorded). Add/modify functions to allow for color selection of obstacles and rock samples.
 
-Two functions realated to the color_thresh function were added to identify the rocks and obstacles:
+Two functions related to the color_thresh() function were added to identify the rocks and obstacles:
+
+![alt text](images/color_thresh.JPG)
 
 1- rock_threshed(img, levels =(110,110,70)) Target's pixels that are greater than 110 in the red//green channels and less than 70 in the blue channel. If this is true of a pixel than it will be an added pixel to determine found rocks. 
 
@@ -111,7 +113,7 @@ The lab culminated in the output of a moviepy from the process_image() function.
 
 #### 2. Launching in autonomous mode your rover can navigate and map autonomously.  Explain your results and how you might improve them in your writeup. 
 
-1- Navigating autonoumously // Moved the process_image code from the lab into the precetion_step() of the rover 
+1- Navigating autonoumously: Moved the process_image() and rock_thresh() function from the lab into the precetion_step() and generated anew function in the perception.py for thresholding the rocks: 
 
     def perception_step(Rover):
         
@@ -186,18 +188,53 @@ The lab culminated in the output of a moviepy from the process_image() function.
 
         return Rover
 
-2- Spots a Rock and Picks up a rock // 
-3- Holding the wall and messing with the angles in which the rover drives // 
-4- Geting Stuck // 
-7- Some results along the way // 
-6- Things to finesse // 5- Returning Home
-                        6- Working with a more clever data structure to keep from revisiting spots in the simulator
+2- Spots a Rock and Picks up a rock:
+
+   drive_rover.py 
+  
+       self.rock_map = False # create a rock_map boolean and set to false
+       
+   perception.py 
+  
+        # if a rock is spotted set the rock_map image to True
+        if rock_map.any(): 
+            Rover.rock_map = True
+            
+   decision.py 
+        
+        # if a rock is spotted steer towards the rock and slow down the rover to vel = 0.2
+        if Rover.rock_map == True:
+                rock_pos = Rover.rock_angles
+                Rover.steer = np.clip(np.mean(rock_pos * 180/np.pi),-15,15)
+                Rover.vel = 0.2
+        # if the rover is near a sample and the velocity is greater than 0 stop and pick up the rock
+                if Rover.near_sample and Rover.vel > 0 and not Rover.picking_up:
+                    Rover.brake = Rover.brake_set
+                    Rover.send_pickup = True
+        
+3- Holding the wall and messing with the angles in which the rover drives in order to keep from repeating terrain:
+
+ a.Experimented with the average angle of the rover in the lab and ... Still needs some tweaking(got stuck a lot more at first messing      with the angle. Found that slowing down the rover and a small angle helped deal with this step
+ 
+ ![alt text](images/steeringAngle_of_rover.JPG)
+ 
+ b.deployed it in the perception step
+   
+   perception.py
+   
+        Rover.nav_angles = angles + 0.05
+
+4- Geting Stuck  
+
+7- Some results along the way 
+
+6- Things to finesse // 
+   a. Returning Home
+   b. Map fidelity
+   c. Working with a more clever data structure to keep from revisiting spots in the simulator
+                        
 **Note: running the simulator with different choices of resolution and graphics quality may produce different results, particularly on different machines!  Make a note of your simulator settings (resolution and graphics quality set on launch) and frames per second (FPS output to terminal by `drive_rover.py`) in your writeup when you submit the project so your reviewer can reproduce your results.**
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
-
-
-
-![alt text](images/3_6.JPG)
+![alt text](images/rover_quality.JPG)
 
 
