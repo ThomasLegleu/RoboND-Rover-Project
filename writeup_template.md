@@ -47,7 +47,7 @@ Two functions realated to the color_thresh function were added to identify the r
 
 #### 1. Populate the `process_image()` function with the appropriate analysis steps to map pixels identifying navigable terrain, obstacles and rock samples into a worldmap.  Run `process_image()` on your test data using the `moviepy` functions provided to create video output of your result. 
 
-See the code below for deploying the process_image() function to generate a movie
+The lab culminated in the output of a moviepy from the process_image() function. It consisted of calling functions developed in the classroom exercies and initalizing the proper variables to allow the functions to run. See the process_image() code below for more details:
 
 
     # 1) Define source and destination points for perspective transform
@@ -62,7 +62,7 @@ See the code below for deploying the process_image() function to generate a movi
                   ])
     # 2) Apply perspective transform
     warped, mask = perspect_transform(img, source, destination)
-    # 3) Apply color threshold to identify navigable terrain/obstacles/rock samples
+    # 3) Apply color threshold to identify navigable terrain/rock samples
     threshed = color_thresh(warped)
     obs_map = np.absolute(np.float32(threshed)-1) * mask
     # 4) Convert thresholded image pixel values to rover-centric coords
@@ -109,8 +109,89 @@ See the code below for deploying the process_image() function to generate a movi
 #### 1. Fill in the `perception_step()` (at the bottom of the `perception.py` script) and `decision_step()` (in `decision.py`) functions in the autonomous mapping scripts and an explanation is provided in the writeup of how and why these functions were modified as they were.
 
 
-#### 2. Launching in autonomous mode your rover can navigate and map autonomously.  Explain your results and how you might improve them in your writeup.  
+#### 2. Launching in autonomous mode your rover can navigate and map autonomously.  Explain your results and how you might improve them in your writeup. 
 
+1- Navigating autonoumously // Moved the process_image code from the lab into the precetion_step() of the rover 
+
+    def perception_step(Rover):
+        
+        dst_size = 5
+     
+        # Set a bottom offset to account for the fact that the bottom of the image 
+        # is not the position of the rover but a bit in front of it
+        # this is just a rough guess, feel free to change it!
+        bottom_offset = 6
+        image = Rover.img
+        source = np.float32([[14, 140], [301 ,140],[200, 96], [118, 96]])
+        destination = np.float32([[image.shape[1]/2 - dst_size, image.shape[0] - bottom_offset],
+                  [image.shape[1]/2 + dst_size, image.shape[0] - bottom_offset],
+                  [image.shape[1]/2 + dst_size, image.shape[0] - 2*dst_size - bottom_offset], 
+                  [image.shape[1]/2 - dst_size, image.shape[0] - 2*dst_size - bottom_offset],
+                  ])
+        # 2) Apply perspective transform
+        warped, mask = perspect_transform(Rover.img, source, destination)
+        # 3) Apply color threshold to identify navigable terrain/rock samples
+        threshed = color_thresh(warped)
+        obs_map = np.absolute(np.float32(threshed)-1) * mask
+        # 4) Update Rover.vision_image(this will be displayed at the left side of the screen)
+        Rover.vision_image[:,:,2] = threshed * 255
+        Rover.vision_image[:,:,0] = obs_map * 255
+        # 5) Convert thresholded image pixel values to rover-centric coords
+        xpix, ypix = rover_coords(threshed)
+        # 6) Convert rover-centric pixel values to world coords
+        world_size = Rover.worldmap.shape[0]
+        scale = 2*dst_size
+        x_world, y_world = pix_to_world(xpix, ypix, Rover.pos[0], Rover.pos[1],Rover.yaw, world_size, scale)
+    
+    
+        obsxpix, obsypix = rover_coords(obs_map)
+        obs_x_world, obs_y_world = pix_to_world(obsxpix, obsypix, Rover.pos[0], Rover.pos[1],Rover.yaw, world_size, scale)
+
+        # 7) Update worldmap (to be displayed on right side of screen)
+        Rover.worldmap[y_world, x_world,2] += 10
+        #Rover.worldmap[obs_y_world,obs_x_world,0] += 1
+
+        # 8) Convert Rover-centric pixel positions to polar coordinates
+        dist, angles = to_polar_coords(xpix,ypix)
+        # Update Rover pixel distances and angles 
+        # Rover.nav_dists = rover_centric_pixel_distances
+        # Rover.nav_angles = rover_centric_angles
+        Rover.nav_angles = angles + 0.05 # change the angle to hug the wall on the left hand side 
+        #print(Rover.nav_angles)
+    
+
+    
+        # See if we find some rocks
+        rock_map = rock_thresh(warped, levels =(110,110,50))
+   
+    
+    
+        if rock_map.any():
+            Rover.rock_map = True
+            rock_x,rock_y = rover_coords(rock_map)
+            rock_x_world,rock_y_world = pix_to_world(rock_x,rock_y,Rover.pos[0], Rover.pos[1],Rover.yaw,world_size,scale)
+
+            rock_dist, rock_ang = to_polar_coords(rock_x,rock_y)
+            Rover.rock_angles = rock_ang
+            rock_idx = np.argmin(rock_dist)
+            rock_xcen = rock_x_world[rock_idx]
+            rock_ycen = rock_y_world[rock_idx]
+            Rover.worldmap[rock_ycen,rock_xcen,1] = 255
+            #print(Rover.rock_angles) 
+            #Rover.vision_image[:,:,1] = 255
+        else:
+            Rover.vision_image[:,:,1] = 0
+            Rover.rock_map = False
+    
+
+        return Rover
+
+2- Spots a Rock and Picks up a rock // 
+3- Holding the wall and messing with the angles in which the rover drives // 
+4- Geting Stuck // 
+7- Some results along the way // 
+6- Things to finesse // 5- Returning Home
+                        6- Working with a more clever data structure to keep from revisiting spots in the simulator
 **Note: running the simulator with different choices of resolution and graphics quality may produce different results, particularly on different machines!  Make a note of your simulator settings (resolution and graphics quality set on launch) and frames per second (FPS output to terminal by `drive_rover.py`) in your writeup when you submit the project so your reviewer can reproduce your results.**
 
 Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
