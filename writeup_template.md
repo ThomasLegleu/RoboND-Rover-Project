@@ -113,7 +113,7 @@ The lab culminated in the output of a moviepy from the process_image() function.
 
 #### 2. Launching in autonomous mode your rover can navigate and map autonomously.  Explain your results and how you might improve them in your writeup. 
 
-1- Navigating autonoumously: Moved the process_image() and rock_thresh() function from the lab into the precetion_step() and generated anew function in the perception.py for thresholding the rocks: 
+1- Navigating autonoumously: Moved the process_image() and rock_thresh() function from the lab into the precetion_step() and generated a new function in the perception.py for thresholding the rocks: 
 
     def perception_step(Rover):
         
@@ -144,8 +144,7 @@ The lab culminated in the output of a moviepy from the process_image() function.
         world_size = Rover.worldmap.shape[0]
         scale = 2*dst_size
         x_world, y_world = pix_to_world(xpix, ypix, Rover.pos[0], Rover.pos[1],Rover.yaw, world_size, scale)
-    
-    
+        
         obsxpix, obsypix = rover_coords(obs_map)
         obs_x_world, obs_y_world = pix_to_world(obsxpix, obsypix, Rover.pos[0], Rover.pos[1],Rover.yaw, world_size, scale)
 
@@ -214,11 +213,11 @@ The lab culminated in the output of a moviepy from the process_image() function.
         
 3- Holding the wall and messing with the angles in which the rover drives in order to keep from repeating terrain:
 
- a.Experimented with the average angle of the rover in the lab and ... Still needs some tweaking(got stuck a lot more at first messing      with the angle. Found that slowing down the rover and a small angle helped deal with this step
+   a. Experimented with the average angle of the rover in the lab and ... Still needs some tweaking (got stuck a lot more at first.             Found that slowing down the rover and a small angle helped deal with this step
  
- ![alt text](images/steeringAngle_of_rover.JPG)
+ ![alt text](images/steeringAngle_of_rover.png)
  
- b.deployed it in the perception step
+   b.deployed the in the perception.py pereception_step()
    
    perception.py
    
@@ -226,12 +225,27 @@ The lab culminated in the output of a moviepy from the process_image() function.
 
 4- Geting Stuck  
 
-7- Some results along the way 
+  drive_rover.py 
+  
+       self.rock_map = False # create a rock_map boolean and set to false
+       
+  decision.py _ really important to keep note  
+        
+        # if a rock is spotted steer towards the rock and slow down the rover to vel = 0.2
+        if Rover.rock_map == True:
+                rock_pos = Rover.rock_angles
+                Rover.steer = np.clip(np.mean(rock_pos * 180/np.pi),-15,15)
+                Rover.vel = 0.2
 
-6- Things to finesse // 
-   a. Returning Home
-   b. Map fidelity
-   c. Working with a more clever data structure to keep from revisiting spots in the simulator
+5- Some results along the way 
+
+![alt text](images/1.JPG)
+
+![alt text](images/2.JPG)
+
+![alt text](images/3.JPG)
+
+6- Things to finesse. In general I was pleased with the overall performance of the rover. With more time it would be fun to investigate the logic to return home and work on a more sophisticated data structure to deal with the steering, forward, picking up a rock being stuck etc... It is also apparent that things like map fidelity and the steering anlge could be tweaked for better overall performance.
                         
 **Note: running the simulator with different choices of resolution and graphics quality may produce different results, particularly on different machines!  Make a note of your simulator settings (resolution and graphics quality set on launch) and frames per second (FPS output to terminal by `drive_rover.py`) in your writeup when you submit the project so your reviewer can reproduce your results.**
 
