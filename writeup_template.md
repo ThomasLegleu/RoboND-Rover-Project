@@ -117,6 +117,7 @@ The lab culminated in the output of a moviepy from the process_image() function.
 
     def perception_step(Rover):
         
+        # 1) Define source and destination points for perspective transform
         dst_size = 5
      
         # Set a bottom offset to account for the fact that the bottom of the image 
@@ -144,7 +145,7 @@ The lab culminated in the output of a moviepy from the process_image() function.
         world_size = Rover.worldmap.shape[0]
         scale = 2*dst_size
         x_world, y_world = pix_to_world(xpix, ypix, Rover.pos[0], Rover.pos[1],Rover.yaw, world_size, scale)
-        
+       
         obsxpix, obsypix = rover_coords(obs_map)
         obs_x_world, obs_y_world = pix_to_world(obsxpix, obsypix, Rover.pos[0], Rover.pos[1],Rover.yaw, world_size, scale)
 
@@ -159,14 +160,9 @@ The lab culminated in the output of a moviepy from the process_image() function.
         # Rover.nav_angles = rover_centric_angles
         Rover.nav_angles = angles + 0.05 # change the angle to hug the wall on the left hand side 
         #print(Rover.nav_angles)
-    
-
-    
-        # See if we find some rocks
-        rock_map = rock_thresh(warped, levels =(110,110,50))
    
-    
-    
+        # look for rocks
+        rock_map = rock_thresh(warped, levels =(110,110,50))
         if rock_map.any():
             Rover.rock_map = True
             rock_x,rock_y = rover_coords(rock_map)
@@ -206,12 +202,12 @@ The lab culminated in the output of a moviepy from the process_image() function.
                 rock_pos = Rover.rock_angles
                 Rover.steer = np.clip(np.mean(rock_pos * 180/np.pi),-15,15)
                 Rover.vel = 0.2
-        # if the rover is near a sample and the velocity is greater than 0 stop and pick up the rock
+                # if the rover is near a sample and the velocity is greater than 0 stop and pick up the rock
                 if Rover.near_sample and Rover.vel > 0 and not Rover.picking_up:
                     Rover.brake = Rover.brake_set
                     Rover.send_pickup = True
         
-3- Holding the wall and messing with the angles in which the rover drives in order to keep from repeating terrain:
+3- Holding the wall and experimenting with the angles in which the rover drives in order to keep from repeating terrain:
 
    a. Experimented with the average angle of the rover in the lab and ... Still needs some tweaking (got stuck a lot more at first.             Found that slowing down the rover and a small angle helped deal with this step
  
@@ -223,19 +219,27 @@ The lab culminated in the output of a moviepy from the process_image() function.
    
         Rover.nav_angles = angles + 0.05
 
-4- Geting Stuck  
+4- Getting Stuck. Th rover got stuck quite a bit.Escpecially when attemoting to hold the wall. In order to keep this from occuring I would record the stop time and attempt the rotate the rover every certain amount of frames.
 
   drive_rover.py 
   
-       self.rock_map = False # create a rock_map boolean and set to false
+       self.stuck_time = 0
        
-  decision.py _ really important to keep note  
+  decision.py   
         
-        # if a rock is spotted steer towards the rock and slow down the rover to vel = 0.2
-        if Rover.rock_map == True:
-                rock_pos = Rover.rock_angles
-                Rover.steer = np.clip(np.mean(rock_pos * 180/np.pi),-15,15)
-                Rover.vel = 0.2
+       if Rover.vel <= 0.2:
+                # Now we're stopped, lets keep count of the time we were stuck
+                Rover.stuck_time += 1
+                print(Rover.stuck_time)
+                
+       # if we are stuck and not going over 0.2 vel, every 25 frames rotate the rover
+       if Rover.vel < 0.2 and Rover.stuck_time % 25 == 0:
+                 Rover.throttle = 0
+                 # Release the brake to allow turning
+                 Rover.brake = 0
+                 # Turn range is +/- 15 degrees, when stopped the next line will induce 4-wheel turning
+                 Rover.steer = -15     
+        
 
 5- Some results along the way 
 
@@ -245,7 +249,7 @@ The lab culminated in the output of a moviepy from the process_image() function.
 
 ![alt text](images/3.JPG)
 
-6- Things to finesse. In general I was pleased with the overall performance of the rover. With more time it would be fun to investigate the logic to return home and work on a more sophisticated data structure to deal with the steering, forward, picking up a rock being stuck etc... It is also apparent that things like map fidelity and the steering anlge could be tweaked for better overall performance.
+6- Things to finesse. With more time it would be fun to investigate the logic to return home and work on a more sophisticated data structure to deal with the steering, forward, stop, picking up a rock, being stuck, and etc... It is also apparent that things like map fidelity and the steering angle could be tweaked for better overall performance.
                         
 **Note: running the simulator with different choices of resolution and graphics quality may produce different results, particularly on different machines!  Make a note of your simulator settings (resolution and graphics quality set on launch) and frames per second (FPS output to terminal by `drive_rover.py`) in your writeup when you submit the project so your reviewer can reproduce your results.**
 
