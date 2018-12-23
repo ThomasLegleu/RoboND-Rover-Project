@@ -35,7 +35,9 @@ You're reading it!
 ### Notebook Analysis
 #### 1. Run the functions provided in the notebook on test images (first with the test data provided, next on data you have recorded). Add/modify functions to allow for color selection of obstacles and rock samples.
 
-Two functions realated to the color_thresh function were added to identify the rocks and obstacles:
+Two functions related to the color_thresh() function were added to identify the rocks and obstacles:
+
+![alt text](images/color_thresh.JPG)
 
 1- rock_threshed(img, levels =(110,110,70)) Target's pixels that are greater than 110 in the red//green channels and less than 70 in the blue channel. If this is true of a pixel than it will be an added pixel to determine found rocks. 
 
@@ -210,11 +212,11 @@ The lab culminated in the output of a moviepy from the process_image() function.
                     Rover.brake = Rover.brake_set
                     Rover.send_pickup = True
         
-3- Holding the wall and messing with the angles in which the rover drives:
+3- Holding the wall and messing with the angles in which the rover drives in order to keep from repeating terrain:
 
- a.Experimented with the average angle of the rover in the lab and ... Still needs some tweaking(got stuck a lot more at first messing with the angle. Found that slowing down the rover helped deal with this step
+ a.Experimented with the average angle of the rover in the lab and ... Still needs some tweaking(got stuck a lot more at first messing      with the angle. Found that slowing down the rover and a small angle helped deal with this step
  
- 
+ ![alt text](images/steeringAngle_of_rover.JPG)
  
  b.deployed it in the perception step
    
@@ -222,9 +224,9 @@ The lab culminated in the output of a moviepy from the process_image() function.
    
         Rover.nav_angles = angles + 0.05
 
-4- Geting Stuck // 
+4- Geting Stuck  
 
-7- Some results along the way // 
+7- Some results along the way 
 
 6- Things to finesse // 
    a. Returning Home
@@ -233,10 +235,6 @@ The lab culminated in the output of a moviepy from the process_image() function.
                         
 **Note: running the simulator with different choices of resolution and graphics quality may produce different results, particularly on different machines!  Make a note of your simulator settings (resolution and graphics quality set on launch) and frames per second (FPS output to terminal by `drive_rover.py`) in your writeup when you submit the project so your reviewer can reproduce your results.**
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
-
-
-
-![alt text](images/3_6.JPG)
+![alt text](images/rover_quality.JPG)
 
 
