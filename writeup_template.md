@@ -186,6 +186,8 @@ The lab culminated in the output of a moviepy from the process_image() function.
                         
 **Note: running the simulator with different choices of resolution and graphics quality may produce different results, particularly on different machines!  Make a note of your simulator settings (resolution and graphics quality set on launch) and frames per second (FPS output to terminal by `drive_rover.py`) in your writeup when you submit the project so your reviewer can reproduce your results.**
 
+Around 10-12 fps...
+
 ![alt text](images/rover_quality.JPG)
 
 
