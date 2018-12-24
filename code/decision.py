@@ -15,16 +15,13 @@ def decision_step(Rover):
         if Rover.vel <= 0.2:
                 # Now we're stopped and we have vision data to see if there's a path forward
                 Rover.stuck_time += 1
-                print(Rover.stuck_time)
+                #print(Rover.stuck_time)
         else:
             Rover.stuck_time = 0        
         # Check for Rover.mode status
         if Rover.mode == 'forward': 
             # Check the extent of navigable terrain
             if Rover.rock_map == True:
-                count = 0
-                count += 1
-                #print (count)
                 rock_pos = Rover.rock_angles
                 Rover.steer = np.clip(np.mean(rock_pos * 180/np.pi),-15,15)
                 Rover.vel = 0.2
@@ -34,7 +31,7 @@ def decision_step(Rover):
             elif len(Rover.nav_angles) >= Rover.stop_forward:  
                 # If mode is forward, navigable terrain looks good 
                 # and velocity is below max, then throttle 
-                if Rover.vel < 0.2 and Rover.stuck_time % 50 == 0:
+                if Rover.vel < 0.2 and Rover.stuck_time % 25 == 0:
                     print("hey")
                     Rover.throttle = 0
                     # Release the brake to allow turning
