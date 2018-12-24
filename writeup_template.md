@@ -139,9 +139,9 @@ The lab culminated in the output of a moviepy from the process_image() function.
                     Rover.brake = Rover.brake_set
                     Rover.send_pickup = True
         
-3- Hold the wall: experimenting with the angles in which the rover drives in order to keep from repeating terrain:
+3- Hold the wall...Experimenting with the angles in which the rover drives in order to keep it from repeating terrain:
 
-   a. Experimented with the average angle of the rover in the lab and ... Still needs some tweaking (got stuck a lot more at first.             Found that slowing down the rover and a small angle helped deal with this step
+   a. Experimented with the average angle of navigable terrain... Still needs tweaking(got stuck a lot more at first. Found that slowing down the rover and a small angle helped deal with this step.
  
  ![alt text](images/steeringAngle_of_rover.png)
  
@@ -151,7 +151,7 @@ The lab culminated in the output of a moviepy from the process_image() function.
    
         Rover.nav_angles = angles + 0.05
 
-4- Getting Stuck. The rover got stuck quite a bit. Escpecially when attemoting to hold the wall. In order to keep this from occuring: record the stuck time and attempt the rotate the rover every certain amount of frames.
+4- Getting Stuck. The rover got stuck quite a bit. Escpecially when attempting to hold the wall. In order to keep this from occuring: record the stuck time and attempt to rotate the rover every certain amount of frames(similar logic to when it has no navigble terrain).
 
   drive_rover.py 
   
@@ -176,13 +176,11 @@ The lab culminated in the output of a moviepy from the process_image() function.
 
 5- Some results along the way 
 
-![alt text](images/1.JPG)
-
 ![alt text](images/2.JPG)
 
 ![alt text](images/3.JPG)
 
-6- Things to finesse. With more time it would be good to investigate the logic to return home and work on a more sophisticated data structure to deal with the decision the rover makes... It is also apparent that things like map fidelity and the steering angle could be tweaked for better overall performance.
+6- Things to finesse. With more time it would be good to investigate the logic to return home and work on a more sophisticated data structure to deal with the decision the rover makes...The map fidelity and the steering angle could be tweaked for better overall performance.
                         
 **Note: running the simulator with different choices of resolution and graphics quality may produce different results, particularly on different machines!  Make a note of your simulator settings (resolution and graphics quality set on launch) and frames per second (FPS output to terminal by `drive_rover.py`) in your writeup when you submit the project so your reviewer can reproduce your results.**
 
