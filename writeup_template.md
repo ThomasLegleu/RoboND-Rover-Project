@@ -113,82 +113,9 @@ The lab culminated in the output of a moviepy from the process_image() function.
 
 #### 2. Launching in autonomous mode your rover can navigate and map autonomously.  Explain your results and how you might improve them in your writeup. 
 
-1- Navigating autonoumously: Moved the process_image() and rock_thresh() function from the lab into the precetion_step() and generated anew function in the perception.py for thresholding the rocks: 
+1- Navigating autonoumously:Migrated the process_image() and rock_thresh() function from the lab into the precetion_step() and generated a new function in the perception.py for thresholding the rocks: 
 
-    def perception_step(Rover):
-        
-        dst_size = 5
-     
-        # Set a bottom offset to account for the fact that the bottom of the image 
-        # is not the position of the rover but a bit in front of it
-        # this is just a rough guess, feel free to change it!
-        bottom_offset = 6
-        image = Rover.img
-        source = np.float32([[14, 140], [301 ,140],[200, 96], [118, 96]])
-        destination = np.float32([[image.shape[1]/2 - dst_size, image.shape[0] - bottom_offset],
-                  [image.shape[1]/2 + dst_size, image.shape[0] - bottom_offset],
-                  [image.shape[1]/2 + dst_size, image.shape[0] - 2*dst_size - bottom_offset], 
-                  [image.shape[1]/2 - dst_size, image.shape[0] - 2*dst_size - bottom_offset],
-                  ])
-        # 2) Apply perspective transform
-        warped, mask = perspect_transform(Rover.img, source, destination)
-        # 3) Apply color threshold to identify navigable terrain/rock samples
-        threshed = color_thresh(warped)
-        obs_map = np.absolute(np.float32(threshed)-1) * mask
-        # 4) Update Rover.vision_image(this will be displayed at the left side of the screen)
-        Rover.vision_image[:,:,2] = threshed * 255
-        Rover.vision_image[:,:,0] = obs_map * 255
-        # 5) Convert thresholded image pixel values to rover-centric coords
-        xpix, ypix = rover_coords(threshed)
-        # 6) Convert rover-centric pixel values to world coords
-        world_size = Rover.worldmap.shape[0]
-        scale = 2*dst_size
-        x_world, y_world = pix_to_world(xpix, ypix, Rover.pos[0], Rover.pos[1],Rover.yaw, world_size, scale)
-    
-    
-        obsxpix, obsypix = rover_coords(obs_map)
-        obs_x_world, obs_y_world = pix_to_world(obsxpix, obsypix, Rover.pos[0], Rover.pos[1],Rover.yaw, world_size, scale)
-
-        # 7) Update worldmap (to be displayed on right side of screen)
-        Rover.worldmap[y_world, x_world,2] += 10
-        #Rover.worldmap[obs_y_world,obs_x_world,0] += 1
-
-        # 8) Convert Rover-centric pixel positions to polar coordinates
-        dist, angles = to_polar_coords(xpix,ypix)
-        # Update Rover pixel distances and angles 
-        # Rover.nav_dists = rover_centric_pixel_distances
-        # Rover.nav_angles = rover_centric_angles
-        Rover.nav_angles = angles + 0.05 # change the angle to hug the wall on the left hand side 
-        #print(Rover.nav_angles)
-    
-
-    
-        # See if we find some rocks
-        rock_map = rock_thresh(warped, levels =(110,110,50))
-   
-    
-    
-        if rock_map.any():
-            Rover.rock_map = True
-            rock_x,rock_y = rover_coords(rock_map)
-            rock_x_world,rock_y_world = pix_to_world(rock_x,rock_y,Rover.pos[0], Rover.pos[1],Rover.yaw,world_size,scale)
-
-            rock_dist, rock_ang = to_polar_coords(rock_x,rock_y)
-            Rover.rock_angles = rock_ang
-            rock_idx = np.argmin(rock_dist)
-            rock_xcen = rock_x_world[rock_idx]
-            rock_ycen = rock_y_world[rock_idx]
-            Rover.worldmap[rock_ycen,rock_xcen,1] = 255
-            #print(Rover.rock_angles) 
-            #Rover.vision_image[:,:,1] = 255
-        else:
-            Rover.vision_image[:,:,1] = 0
-            Rover.rock_map = False
-    
-
-        return Rover
-
-2- Spots a Rock and Picks up a rock:
+2- Spots a Rock and Pick up a rock:
 
    drive_rover.py 
   
@@ -207,33 +134,57 @@ The lab culminated in the output of a moviepy from the process_image() function.
                 rock_pos = Rover.rock_angles
                 Rover.steer = np.clip(np.mean(rock_pos * 180/np.pi),-15,15)
                 Rover.vel = 0.2
-        # if the rover is near a sample and the velocity is greater than 0 stop and pick up the rock
+                # if the rover is near a sample and the velocity is greater than 0 stop and pick up the rock
                 if Rover.near_sample and Rover.vel > 0 and not Rover.picking_up:
                     Rover.brake = Rover.brake_set
                     Rover.send_pickup = True
         
-3- Holding the wall and messing with the angles in which the rover drives in order to keep from repeating terrain:
+3- Hold the wall...Experimenting with the angles in which the rover drives in order to keep it from repeating terrain:
 
- a.Experimented with the average angle of the rover in the lab and ... Still needs some tweaking(got stuck a lot more at first messing      with the angle. Found that slowing down the rover and a small angle helped deal with this step
+   a. Experimented with the average angle of navigable terrain... Still needs tweaking(got stuck a lot more at first. Found that slowing down the rover and a small angle helped deal with this step.
  
- ![alt text](images/steeringAngle_of_rover.JPG)
+ ![alt text](images/steeringAngle_of_rover.png)
  
- b.deployed it in the perception step
+   b.deployed the in the perception.py pereception_step()
    
    perception.py
    
         Rover.nav_angles = angles + 0.05
 
-4- Geting Stuck  
+4- Getting Stuck. The rover got stuck quite a bit. Escpecially when attempting to hold the wall. In order to keep this from occuring: record the stuck time and attempt to rotate the rover every certain amount of frames(similar logic to when it has no navigble terrain).
 
-7- Some results along the way 
+  drive_rover.py 
+  
+       self.stuck_time = 0
+       
+  decision.py   
+       
+       # if the rover velocity is less than 0.2
+       if Rover.vel < 0.2:
+                # keep count of the time we were stuck
+                Rover.stuck_time += 1
+                print(Rover.stuck_time)
+                
+       # if we are stuck and not going over 0.2 vel, every 25 frames rotate the rover
+       if Rover.vel < 0.2 and Rover.stuck_time % 25 == 0:
+                 Rover.throttle = 0
+                 # Release the brake to allow turning
+                 Rover.brake = 0
+                 # Turn range is +/- 15 degrees, when stopped the next line will induce 4-wheel turning
+                 Rover.steer = -15     
+        
 
-6- Things to finesse // 
-   a. Returning Home
-   b. Map fidelity
-   c. Working with a more clever data structure to keep from revisiting spots in the simulator
+5- Some results along the way 
+
+![alt text](images/2.JPG)
+
+![alt text](images/3.JPG)
+
+6- Things to finesse. With more time it would be good to investigate the logic to return home and work on a more sophisticated data structure to deal with the decision the rover makes...The map fidelity and the steering angle could be tweaked for better overall performance.
                         
 **Note: running the simulator with different choices of resolution and graphics quality may produce different results, particularly on different machines!  Make a note of your simulator settings (resolution and graphics quality set on launch) and frames per second (FPS output to terminal by `drive_rover.py`) in your writeup when you submit the project so your reviewer can reproduce your results.**
+
+Around 10-12 fps...
 
 ![alt text](images/rover_quality.JPG)
 
