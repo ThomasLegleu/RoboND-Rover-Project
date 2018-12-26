@@ -113,7 +113,7 @@ The lab culminated in the output of a moviepy from the process_image() function.
 
 #### 2. Launching in autonomous mode your rover can navigate and map autonomously.  Explain your results and how you might improve them in your writeup. 
 
-1- Navigating autonoumously:Migrated the process_image() and rock_thresh() function from the lab into the precetion_step() and generated a new function in the perception.py for thresholding the rocks: 
+1- Navigating autonoumously: Migrated the process_image() function from the lab into the precetion_step() and generated a new function in  rock_thresh() for finding rocks: 
 
 2- Spots a Rock and Pick up a rock:
 
@@ -145,7 +145,7 @@ The lab culminated in the output of a moviepy from the process_image() function.
  
  ![alt text](images/steeringAngle_of_rover.png)
  
-   b.deployed the in the perception.py pereception_step()
+   b.deployed it in the perception.py pereception_step()
    
    perception.py
    
