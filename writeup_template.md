@@ -35,7 +35,7 @@ You're reading it!
 ### Notebook Analysis
 #### 1. Run the functions provided in the notebook on test images (first with the test data provided, next on data you have recorded). Add/modify functions to allow for color selection of obstacles and rock samples.
 
-Two functions related to the color_thresh() function were added to identify the rocks and obstacles:
+Two functions presented in the video related to the color_thresh() function were added to identify the rocks and obstacles:
 
 ![alt text](images/color_thresh.JPG)
 
@@ -165,7 +165,7 @@ The lab culminated in the output of a moviepy from the process_image() function.
                 Rover.stuck_time += 1
                 print(Rover.stuck_time)
                 
-       # if we are stuck and not going over 0.2 vel, every 25 frames rotate the rover
+       # if we are stuck and not going over 0.2 vel, every 25 frames rotate the rover, Got some insight from Changkun on where to put           this in the tree and to use vel and stuck.time for triggering a new behavior
        if Rover.vel < 0.2 and Rover.stuck_time % 25 == 0:
                  Rover.throttle = 0
                  # Release the brake to allow turning
