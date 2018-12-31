@@ -141,7 +141,7 @@ The lab culminated in the output of a moviepy from the process_image() function.
         
 3- Hold the wall...Experimenting with the angles in which the rover drives in order to keep it from repeating terrain:
 
-   a. Experimented with the average angle of navigable terrain... Still needs tweaking(got stuck a lot more at first. Found that slowing down the rover and a small angle helped deal with this step.
+   a. Experimented with the average angle of navigable terrain... Still needs tweaking(got stuck a lot more at first. Found that slowing down the rover and a small angle helped deal with this step. 
  
  ![alt text](images/steeringAngle_of_rover.png)
  
