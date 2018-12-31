@@ -35,7 +35,7 @@ You're reading it!
 ### Notebook Analysis
 #### 1. Run the functions provided in the notebook on test images (first with the test data provided, next on data you have recorded). Add/modify functions to allow for color selection of obstacles and rock samples.
 
-Two functions related to the color_thresh() function were added to identify the rocks and obstacles:
+Two functions presented in the video related to the color_thresh() function were added to identify the rocks and obstacles:
 
 ![alt text](images/color_thresh.JPG)
 
@@ -113,7 +113,7 @@ The lab culminated in the output of a moviepy from the process_image() function.
 
 #### 2. Launching in autonomous mode your rover can navigate and map autonomously.  Explain your results and how you might improve them in your writeup. 
 
-1- Navigating autonoumously:Migrated the process_image() and rock_thresh() function from the lab into the precetion_step() and generated a new function in the perception.py for thresholding the rocks: 
+1- Navigating autonoumously: Migrated the process_image() function from the lab into the precetion_step() and generated a new function in  rock_thresh() for finding rocks: 
 
 2- Spots a Rock and Pick up a rock:
 
@@ -141,11 +141,11 @@ The lab culminated in the output of a moviepy from the process_image() function.
         
 3- Hold the wall...Experimenting with the angles in which the rover drives in order to keep it from repeating terrain:
 
-   a. Experimented with the average angle of navigable terrain... Still needs tweaking(got stuck a lot more at first. Found that slowing down the rover and a small angle helped deal with this step.
+   a. Experimented with the average angle of navigable terrain... Still needs tweaking(got stuck a lot more at first. Found that slowing down the rover and a small angle helped deal with this step. 
  
  ![alt text](images/steeringAngle_of_rover.png)
  
-   b.deployed the in the perception.py pereception_step()
+   b.deployed it in the perception.py pereception_step()
    
    perception.py
    
@@ -165,7 +165,8 @@ The lab culminated in the output of a moviepy from the process_image() function.
                 Rover.stuck_time += 1
                 print(Rover.stuck_time)
                 
-       # if we are stuck and not going over 0.2 vel, every 25 frames rotate the rover
+       # if we are stuck and not going over 0.2 vel, every 25 frames rotate the rover. 
+       Folowed Changkun's method on where to put this in the tree and to use vel and stuck.time for triggering a new behavior.
        if Rover.vel < 0.2 and Rover.stuck_time % 25 == 0:
                  Rover.throttle = 0
                  # Release the brake to allow turning
