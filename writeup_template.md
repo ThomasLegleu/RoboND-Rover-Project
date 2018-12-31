@@ -165,7 +165,8 @@ The lab culminated in the output of a moviepy from the process_image() function.
                 Rover.stuck_time += 1
                 print(Rover.stuck_time)
                 
-       # if we are stuck and not going over 0.2 vel, every 25 frames rotate the rover, Got some insight from Changkun on where to put           this in the tree and to use vel and stuck.time for triggering a new behavior
+       # if we are stuck and not going over 0.2 vel, every 25 frames rotate the rover. 
+       Folowed Changkun's method on where to put this in the tree and to use vel and stuck.time for triggering a new behavior.
        if Rover.vel < 0.2 and Rover.stuck_time % 25 == 0:
                  Rover.throttle = 0
                  # Release the brake to allow turning
