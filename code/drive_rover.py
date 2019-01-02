@@ -83,7 +83,6 @@ class RoverState():
         self.send_pickup = False # Set to True to trigger rock pickup
 # Initialize our rover 
 Rover = RoverState()
-#print(Rover.pos)
 # Variables to track frames per second (FPS)
 # Intitialize frame counter
 frame_counter = 0
@@ -103,7 +102,7 @@ def telemetry(sid, data):
         fps = frame_counter
         frame_counter = 0
         second_counter = time.time()
-    #print("Current FPS: {}".format(fps))
+    print("Current FPS: {}".format(fps))
 
     if data:
         global Rover

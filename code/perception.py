@@ -166,7 +166,7 @@ def perception_step(Rover):
         # Rover.nav_dists = rover_centric_pixel_distances
         # Rover.nav_angles = rover_centric_angles
     Rover.nav_angles = angles + 0.05 # change the angle to hug the wall on the left hand side 
-    #print(Rover.nav_angles)
+
     
 
     
@@ -186,8 +186,6 @@ def perception_step(Rover):
         rock_xcen = rock_x_world[rock_idx]
         rock_ycen = rock_y_world[rock_idx]
         Rover.worldmap[rock_ycen,rock_xcen,1] = 255
-        #print(Rover.rock_angles) 
-        #Rover.vision_image[:,:,1] = 255
     else:
         Rover.vision_image[:,:,1] = 0
         Rover.rock_map = False
